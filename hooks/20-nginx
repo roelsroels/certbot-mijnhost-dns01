@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+[ -n "${RENEWED_LINEAGE:-}" ] || exit 0
+config=$(nginx -T)
+if printf '%s\n' "$config" | awk -v path="$RENEWED_LINEAGE/fullchain.pem;" '
+    $1 == "ssl_certificate" && $2 == path { found = 1 }
+    END { exit !found }
+'; then
+    systemctl reload nginx
+fi

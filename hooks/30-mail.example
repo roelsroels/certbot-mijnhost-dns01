@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+CERT_NAME=mail.example.net
+TLS_HOSTNAME=mail.example.net
+lineage="/etc/letsencrypt/live/$CERT_NAME"
+[ "${RENEWED_LINEAGE:-}" = "$lineage" ] || exit 0
+
+# Check that the deployed file starts with the leaf and contains its chain.
+cat "$lineage/cert.pem" "$lineage/chain.pem" | cmp - "$lineage/fullchain.pem"
+cert_public_key=$(openssl x509 -in "$lineage/cert.pem" -pubkey -noout)
+private_public_key=$(openssl pkey -in "$lineage/privkey.pem" -pubout)
+[ "$cert_public_key" = "$private_public_key" ] || {
+    echo "Mail certificate does not match its private key" >&2
+    exit 1
+}
+openssl verify -purpose sslserver -verify_hostname "$TLS_HOSTNAME" \
+    -untrusted "$lineage/chain.pem" "$lineage/cert.pem"
+postfix check
+doveconf -n >/dev/null
+systemctl reload postfix dovecot
