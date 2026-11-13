@@ -100,3 +100,7 @@ A dry run verifies issuance against staging. Deploy hooks run after successful l
 - **Old DNS answers** can linger after a provider move. Verify the registry delegation and check each authoritative nameserver. Allow time for cached answers to expire.
 
 [Certbot user guide](https://eff-certbot.readthedocs.io/en/stable/using.html) · [mijn.host provider options](https://go-acme.github.io/lego/dns/mijnhost/) · [mijn.host DNS API](https://mijn.host/api/doc/api-4585320)
+
+## Moving a domain from TransIP
+
+See the [DNS migration guide](migration/README.md) for exporting zones, preparing mijn.host templates, and checking delegation before switching renewals.

@@ -5,3 +5,7 @@
 .env
 credentials/
 .DS_Store
+
+# Private migration exports
+*-source.json
+*.zone
